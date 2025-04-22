@@ -175,7 +175,7 @@ class HSD(nn.Module):
         pos_item_embeddings_txt = item_embeddings_txt[item_pos_ids]
         neg_item_embeddings_txt = item_embeddings_txt[item_neg_ids]
 
-        # Equation (12)
+        # Equation (13)
         pos_score_id = torch.sum(pos_user_embeddings_id * pos_item_embeddings_id, dim=1)  # (cf_batch_size)
         neg_score_id = torch.sum(pos_user_embeddings_id * neg_item_embeddings_id, dim=1)  # (cf_batch_size)
 
@@ -188,11 +188,11 @@ class HSD(nn.Module):
         pos_score_fusion = pos_score_id + pos_score_img + pos_score_txt
         neg_score_fusion = neg_score_id + neg_score_img + neg_score_txt
 
-        # Equation (13)
+        # Equation (14)
         cf_loss = (-1.0) * F.logsigmoid(pos_score_fusion - neg_score_fusion)
         cf_loss = torch.mean(cf_loss)
 
-        # Equation (14)
+        # Equation (15)
         cf_loss_id = (-1.0) * F.logsigmoid(pos_score_id - neg_score_id)
         cf_loss_id = torch.mean(cf_loss_id)
 
@@ -204,7 +204,7 @@ class HSD(nn.Module):
 
         channel_loss = cf_loss_id + cf_loss_img + cf_loss_txt
 
-        # Equation (14)
+        # Equation (16)
         score_id = torch.stack([pos_score_id, neg_score_id], dim=1) / self.tau
         score_img = torch.stack([pos_score_img, neg_score_img], dim=1) / self.tau
         score_txt = torch.stack([pos_score_txt, neg_score_txt], dim=1) / self.tau
